@@ -1,0 +1,158 @@
+#!/bin/bash
+
+CONFIGFILE=/mds/supercommod/etc/supercommod.conf
+if [ ! -f $CONFIGFILE ]
+then
+	echo "$CONFIGFILE does not exist ! "
+fi
+
+. $CONFIGFILE
+
+RUNSHELL=$DefaultDir/moudule/runshell_mod.sh
+
+[ -f  $RUNSHELL ] || echo "runshell moudule not exist!!" 
+
+. $RUNSHELL
+
+
+cat -n $Host | grep '\[' >$TmpDir/a                                                    #输出所有组行到临时文件
+
+HGID=`cat -n $Host | grep "\[$2\]" |awk '{print $1}'`                                    #得到指定主机组在hosts文件中的ID号
+THGID=`cat -n $TmpDir/a | grep "\[$2\]" |awk '{print $1}'`                                       #得到指定主机组在临时文件中的ID号
+#NHGID=`cat -n a |grep $[ THGID + 1 ]|awk '{print $2}'`                                  #指定主机组的下一个主机组在hosts文件中的PIDi
+NHGID=`cat -n $TmpDir/a | awk -v awk_i="$[ THGID + 1 ]" 'NR==awk_i{print}'|awk '{print $2}'`     #指定主机组的下一个主机组在hosts文件中的PIDi
+HID=$[ HGID + 1 ]
+
+finall=` cat -n  $Host| awk 'NF{k=$0}END{print k}' | awk '{print $1}'`                   #指定最后一行的id号
+Finall=$[ finall + 1 ]
+#判断是否为最后一组
+if test -z "$NHGID"
+then
+#       echo $HID 
+        Host=`for (( j=$HID;j < $Finall;j++ ));do cat $Host | awk -v awk_i="$j" 'NR==awk_i{print}';done`
+else
+#       echo $HID
+        Host=`for (( j=$HID;j < $NHGID;j++ ));do cat $Host | awk -v awk_i="$j" 'NR==awk_i{print}';done`
+        echo -e "$Host\n" >> $TmpDir/b	
+fi
+echo $Host
+
+case $1 in
+	       -iscp)   
+		for i in `cat $TmpDir/b`;
+		do
+			echo -e ${GREEN_COLOR}\*************[$i]*************${RES}\\n
+		        scp $3 $i:$4
+		done
+		;;
+	       -hscp)
+		#echo -e \*************[$3]*************\\n
+	        echo -e ${GREEN_COLOR}\*************[$2]*************\\n${RES}
+		scp $3 $2:$4
+		;;
+	       -vscp)   ##增加-ivscp和-hvscp参数，其作用是批量或单从管理主机中复制文件到proxy主机，实现远程快速拷贝数据。执行过程：1.先检查有无当日文件夹，如果没有创建脚本执行当日文件夹，如果有，2 检查有无各主机文件夹，如果没有创建各主机文件夹后scp文件，如果有，scp文件
+		for i in `cat $TmpDir/b`
+		do
+		{
+		tmpdir=`date +%Y%m%d%H`
+	        echo -e ${GREEN_COLOR}\*************[$i]*************\\n${RES}
+		if [ -d /tmp/$tmpdir ];
+		then
+			if [ -d /tmp/$tmpdir/$Host ]
+			then
+				scp $i:$3 /tmp/$tmpdir/$Host
+			else
+				mkdir /tmp/$tmpdir/$Host
+                        	scp $i:$3 /tmp/$tmpdir/$Host
+			fi
+		else
+			mkdir /tmp/$tmpdir
+			if [ -d /tmp/$tmpdir/$Host ]
+                        then
+                                scp $i:$3 /tmp/$tmpdir/$Host
+                        else
+                                mkdir /tmp/$tmpdir/$Host
+                                scp $i:$3 /tmp/$tmpdir/$Host
+                        fi
+		fi
+		}
+		done
+		;;
+		-hvscp)
+                #echo -e \*************[$2]*************\\n
+	        echo -e ${GREEN_COLOR}\*************[$i]*************\\n${RES}
+		tmpdir=`date +%Y%m%d%H`
+                if [ -d /tmp/$tmpdir ];
+                then
+			if [ -d /tmp/$tmpdir/$2 ]
+                        then
+                                scp $2:$3 /tmp/$tmpdir/$2
+                        else
+                                mkdir /tmp/$tmpdir/$i
+                                scp $2:$3 /tmp/$tmpdir/$2
+                        fi
+                else
+                        mkdir /tmp/$tmpdir
+			if [ -d /tmp/$tmpdir/$2 ]
+                        then
+                                scp $2:$3 /tmp/$tmpdir/$2
+                        else
+                                mkdir /tmp/$tmpdir/$i
+                                scp $2:$3 /tmp/$tmpdir/$2
+                        fi
+                fi
+                ;;
+               -i)
+                for i in `cat $TmpDir/b`;
+                do
+		{
+                   #echo -e \*************[$i]*************\\n
+	           echo -e ${GREEN_COLOR}\*************[$i]*************\\n${RES}
+                   ssh $i $3
+                   echo -e \\n
+		}
+                done
+                ;;
+               -h)
+		{
+                #echo -e \*************[$2]*************\\n
+	        echo -e ${GREEN_COLOR}\*************[$2]*************\\n${RES}
+                ssh $2 $3
+                echo -e \\n
+		}
+                ;;
+		-isudo)  #ssh 加入-t 参数远程执行sudo命令
+		 for i in `cat $TmpDir/b`;
+		 do
+		#echo -e \*************[$i]*************\\n
+	         echo -e ${GREEN_COLOR}\*************[$i]*************\\n${RES}
+                 ssh -t $i $3
+                 echo -e \\n
+		 done
+		;;
+		-hsudo)
+		 #echo -e \*************[$2]*************\\n
+	         echo -e ${GREEN_COLOR}\*************[$2]*************\\n${RES}
+                 ssh -t $2 $3
+                 echo -e \\n
+		;;
+		-ishell)
+	        echo -e ${GREEN_COLOR}\*************[$2]*************\\n${RES}
+		for i in `cat $TmpDir/b`;
+		do
+		irunshell
+		done
+		;;
+		-hshell)
+	        echo -e ${GREEN_COLOR}\*************[$2]*************\\n${RES}
+		hrunshell $1 $2 $3 $4
+		;;
+                *)
+                echo -e  $"Usage: $0 \n-i|-h \n-i hostfile or -h host\n用法:supercommod -i [主机组名] [命令]\n     supercommod -h [主机名] [命令]\n \n-iscp|-hscp \n-iscp: scp localhost file to many remote host | -hscp: scp a local file to remote host\n用法：supercommod -iscp [主机组名] [本地文件路径] [远程文件路径]\n       supercommod -iscp [主机名] [本地文件路径]\n\n-isudo|-hsudo\nAs add sudo before shell\n用法:supercommod -isudo [主机组名] [命令]\n     supercommod -hsudo [主机名] [命令]"
+                exit 0
+
+                ;;
+esac
+rm -rf $TmpDir/a
+rm -rf $TmpDir/b
+
