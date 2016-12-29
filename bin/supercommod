@@ -7,7 +7,7 @@ then
 fi
 
 . $CONFIGFILE
-
+echo "`date +%Y%m%d`>> $LogDir/supercommond.log"\n
 RUNSHELL=$DefaultDir/moudule/runshell_mod.sh
 
 [ -f  $RUNSHELL ] || echo "runshell moudule not exist!!" 
@@ -137,10 +137,10 @@ case $1 in
                  echo -e \\n
 		;;
 		-ishell)
-	        echo -e ${GREEN_COLOR}\*************[$2]*************\\n${RES}
 		for i in `cat $TmpDir/b`;
 		do
-		irunshell
+	        echo -e ${GREEN_COLOR}\*************[$i]*************\\n${RES}
+		irunshell $1 $2 $3 $4 $i
 		done
 		;;
 		-hshell)

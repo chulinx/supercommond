@@ -1,0 +1,42 @@
+20161229
+chown: 正在更改"/tmp/" 的所有者: 不允许的操作
+Connection to ap01 closed.
+ssh: Could not resolve hostname chmod: Name or service not known
+chown: 正在更改"/tmp/" 的所有者: 不允许的操作
+Connection to ap02 closed.
+ssh: Could not resolve hostname chmod: Name or service not known
+chown: 正在更改"/tmp/" 的所有者: 不允许的操作
+Connection to ap_sh01 closed.
+ssh: Could not resolve hostname chmod: Name or service not known
+chown: 正在更改"/tmp/" 的所有者: 不允许的操作
+Connection to ap_sh02 closed.
+ssh: Could not resolve hostname chmod: Name or service not known
+chown: 正在更改"/tmp/" 的所有者: 不允许的操作
+Connection to ap_hk01 closed.
+ssh: Could not resolve hostname chmod: Name or service not known
+chown: 正在更改"/tmp/" 的所有者: 不允许的操作
+Connection to ap_hk02 closed.
+ssh: Could not resolve hostname chmod: Name or service not known
+20161229
+chown: 正在更改"/tmp/" 的所有者: 不允许的操作
+Connection to ap01 closed.
+ssh: Could not resolve hostname chmod: Name or service not known
+chown: 正在更改"/tmp/" 的所有者: 不允许的操作
+Connection to ap02 closed.
+ssh: Could not resolve hostname chmod: Name or service not known
+chown: 正在更改"/tmp/" 的所有者: 不允许的操作
+Connection to ap_sh01 closed.
+ssh: Could not resolve hostname chmod: Name or service not known
+chown: 正在更改"/tmp/" 的所有者: 不允许的操作
+Connection to ap_sh02 closed.
+ssh: Could not resolve hostname chmod: Name or service not known
+chown: 正在更改"/tmp/" 的所有者: 不允许的操作
+Connection to ap_hk01 closed.
+ssh: Could not resolve hostname chmod: Name or service not known
+chown: 正在更改"/tmp/" 的所有者: 不允许的操作
+Connection to ap_hk02 closed.
+ssh: Could not resolve hostname chmod: Name or service not known
+chmod: 更改"/tmp/" 的权限: 不允许的操作
+Connection to ap01 closed.
+chmod: 更改"/tmp/" 的权限: 不允许的操作
+Connection to ap01 closed.
