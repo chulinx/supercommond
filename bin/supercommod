@@ -1,19 +1,25 @@
 #!/bin/bash
 
-CONFIGFILE=/mds/supercommod/etc/supercommod.conf
+#检查配置文件，并导入
+CONFIGFILE=/home/mitake/Git/supercommond/etc/supercommod.conf
 if [ ! -f $CONFIGFILE ]
 then
 	echo "$CONFIGFILE does not exist ! "
 fi
-
 . $CONFIGFILE
-echo "`date +%Y%m%d`>> $LogDir/supercommond.log"\n
+
+echo "`date +%Y%m%d`\n" >> $LogDir/supercommond.log
 RUNSHELL=$DefaultDir/moudule/runshell_mod.sh
 
+#检查moudule，并导入
 [ -f  $RUNSHELL ] || echo "runshell moudule not exist!!" 
-
 . $RUNSHELL
 
+#检查tmp文件夹
+if [ ! -d $DefaultDir/tmp  ];
+then
+	mkdir -p $DefaultDir/tmp
+fi
 
 cat -n $Host | grep '\[' >$TmpDir/a                                                    #输出所有组行到临时文件
 
@@ -153,6 +159,6 @@ case $1 in
 
                 ;;
 esac
-rm -rf $TmpDir/a
-rm -rf $TmpDir/b
+#rm -rf $TmpDir/a
+#rm -rf $TmpDir/b
 
